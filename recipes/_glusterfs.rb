@@ -1,17 +1,17 @@
 #
 # Cookbook Name:: mount
-# Recipe:: _nfs
+# Recipe:: _glusterfs
 #
 # Copyright (C) 2013 UAF GINA
 # 
 
 case node['platform']
   when 'redhat', 'centos'
-    nfs_package = "nfs-utils"
+    glusterfs_package = "glusterfs-fuse"
   when 'ubuntu'
-    nfs_package = "nfs-common"
+    glusterfs_package = "glusterfs-client"
 end
 
-package nfs_package do
+package glusterfs_package do
   action :install
 end

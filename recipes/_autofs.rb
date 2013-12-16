@@ -5,8 +5,8 @@
 # Copyright (C) 2013 UAF GINA
 # 
 
-case node['platform_family']
-  when 'rhel'
+case node['platform']
+  when 'redhat', 'centos'
     autofs_package = "autofs"
   when 'ubuntu'
     autofs_package = "autofs"
@@ -17,5 +17,5 @@ package autofs_package do
 end
 
 service autofs_package do
-  action [:enable, :start]
+  action [:restart, :enable, :start]
 end
