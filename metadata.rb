@@ -1,6 +1,6 @@
 name             'mount'
-maintainer       'YOUR_NAME'
-maintainer_email 'YOUR_EMAIL'
+maintainer       'Mark Morlino'
+maintainer_email 'mark@gina.alaska.edu'
 license          'All rights reserved'
 description      'Installs/Configures mount'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
