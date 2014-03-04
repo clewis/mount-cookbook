@@ -24,7 +24,8 @@ Vagrant.configure("2") do |config|
   config.vm.define 'centos-6' do |c|
     c.berkshelf.berksfile_path = "./Berksfile"
     c.vm.box = "opscode-centos-6.3"
-    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
+    #c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.3_chef-11.2.0.box"
+    c.vm.box_url = "http://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.4_chef-11.4.4.box"
   end
 
   config.omnibus.chef_version = "11.6.0"
@@ -37,7 +38,7 @@ Vagrant.configure("2") do |config|
       :mounts => {
         :auto => [
           {
-            :device => 'file.gina.alaska.edu:/mnt/gvolfile/OfficeShare',
+            :device => 'pod6.gina.alaska.edu:/gvolfile',
             :fstype => 'nfs',
             :mount_point => 'OfficeShare',
             :options => 'rw,intr,tcp,nolock,vers=3',
@@ -47,20 +48,16 @@ Vagrant.configure("2") do |config|
         ],
         :static => [
           {
-            :device => 'file.gina.alaska.edu:/mnt/gvolfile/OfficeShare',
+            :REMOVE => 'the value does not matter it will be removed if the REMOVE key is present',
+            :device => 'pod6.gina.alaska.edu:/gvolfile',
             :fstype => 'nfs',
-            :mount_point => '/mnt/foo',
+            :mount_point => '/static/nfs/OfficeShare',
             :options => 'intr,tcp,nolock,vers=3',
             :device_type => :device,
             :dump => 0,
             :pass => 2
           }
         ]
-      },
-      :mysql => {
-        :server_root_password => 'rootpass',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
       }
     }
 
