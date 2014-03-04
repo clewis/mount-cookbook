@@ -9,6 +9,7 @@ include_recipe "mount::_nfs"
 include_recipe "mount::_autofs"
 include_recipe "mount::_glusterfs"
 
+<<<<<<< HEAD
 # Setup Static mounts: create mountpoints and configure in fstab
 Array(node['mounts']['static']).each do |s|
   if s.has_key?("REMOVE")
@@ -27,6 +28,10 @@ Array(node['mounts']['static']).each do |s|
   else
     directory s['mount_point'] do
       recursive true
+=======
+Array(node['mounts']['static']).each do |stat|
+  directory stat['mount_point'] do
+>>>>>>> 2fbaf3912e6f58b390dc05c33fdfde30dc6806b1
       action :create
     end
     mount s['mount_point'] do
@@ -40,6 +45,8 @@ Array(node['mounts']['static']).each do |s|
       action [:mount, :enable]
     end
   end
+end
+<<<<<<< HEAD
 
 # Setup Autofs mounts
 Array(node['mounts']['auto']).each do |a|
@@ -53,6 +60,23 @@ Array(node['mounts']['auto']).each do |a|
       fe.search_file_delete_line(/#{a['device']}/)
       fe.write_file
     end
+=======
+Array(node['mounts']['auto']).each do |auto|
+  directory auto['parent_directory'] do
+    recursive true
+    action :create
+  end
+  if File.exists?("/etc/auto.master")
+    fe = Chef::Util::FileEdit.new("/etc/auto.master")
+    fe.insert_line_if_no_match(/^#{auto['parent_directory']}/,"#{auto['parent_directory']}	#{auto['config_file']}	--timeout=60 --ghost\n")
+    fe.search_file_replace(/^\+/, "#+")
+    fe.write_file
+  end
+  if File.exists?(auto['config_file']) 
+    fe = Chef::Util::FileEdit.new(auto['config_file'])
+    fe.insert_line_if_no_match(/^#{auto['device']}\s+/,"#{auto['mount_point']}	-fstype=#{auto['fstype']},#{auto['options']}	#{auto['device']}\n")
+    fe.write_file
+>>>>>>> 2fbaf3912e6f58b390dc05c33fdfde30dc6806b1
   else
     if File.exists?("/etc/auto.master")
       fe = Chef::Util::FileEdit.new("/etc/auto.master")
