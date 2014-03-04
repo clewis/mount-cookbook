@@ -9,7 +9,7 @@ include_recipe "mount::_nfs"
 include_recipe "mount::_autofs"
 include_recipe "mount::_glusterfs"
 
-node['mounts']['static'].each do |stat|
+Array(node['mounts']['static']).each do |stat|
   directory stat['mount_point'] do
       action :create
   end
@@ -24,7 +24,7 @@ node['mounts']['static'].each do |stat|
     action [:mount, :enable]
   end
 end
-node['mounts']['auto'].each do |auto|
+Array(node['mounts']['auto']).each do |auto|
   directory auto['parent_directory'] do
     recursive true
     action :create
@@ -37,7 +37,7 @@ node['mounts']['auto'].each do |auto|
   end
   if File.exists?(auto['config_file']) 
     fe = Chef::Util::FileEdit.new(auto['config_file'])
-    fe.insert_line_if_no_match(/#{auto['device']}/,"#{auto['mount_point']}	-fstype=#{auto['fstype']},#{auto['options']}	#{auto['device']}\n")
+    fe.insert_line_if_no_match(/^#{auto['device']}\s+/,"#{auto['mount_point']}	-fstype=#{auto['fstype']},#{auto['options']}	#{auto['device']}\n")
     fe.write_file
   else
     file auto['config_file'] do
