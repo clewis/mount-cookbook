@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
             :device => 'pod6.gina.alaska.edu:/gvolfile',
             :fstype => 'nfs',
             :mount_point => 'OfficeShare',
-            :options => 'rw,intr,tcp,nolock,vers=3',
+            :options => 'ro,intr,tcp,nolock,vers=3',
             :parent_directory => '/auto/nfs',
             :config_file => '/etc/auto.nfs',
           }
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
             :device => 'pod6.gina.alaska.edu:/gvolfile',
             :fstype => 'nfs',
             :mount_point => '/static/nfs/OfficeShare',
-            :options => 'intr,tcp,nolock,vers=3',
+            :options => 'ro,intr,tcp,nolock,vers=3',
             :device_type => :device,
             :dump => 0,
             :pass => 2
