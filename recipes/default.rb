@@ -40,6 +40,7 @@ Array(node['mounts']['static']).each do |s|
       action [:mount, :enable]
     end
   end
+end
 
 # Setup Autofs mounts
 Array(node['mounts']['auto']).each do |a|
