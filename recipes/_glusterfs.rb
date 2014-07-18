@@ -12,6 +12,8 @@ case node['platform']
     glusterfs_package = "glusterfs-client"
 end
 
-package glusterfs_package do
-  action :install
+unless glusterfs_package.nil?
+  package glusterfs_package do
+    action :install
+  end
 end

@@ -12,10 +12,12 @@ case node['platform']
     autofs_package = "autofs"
 end
 
-package autofs_package do
-  action :install
-end
-
-service autofs_package do
-  action [:restart, :enable, :start]
+unless autofs_package.nil?
+  package autofs_package do
+    action :install
+  end
+ 
+  service autofs_package do
+    action [:restart, :enable, :start]
+  end
 end

@@ -12,6 +12,8 @@ case node['platform']
     nfs_package = "nfs-common"
 end
 
-package nfs_package do
-  action :install
+unless nfs_package.nil?
+  package nfs_package do
+    action :install
+  end
 end
