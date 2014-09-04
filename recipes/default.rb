@@ -6,8 +6,6 @@
 # 
 
 include_recipe "mount::_nfs"
-include_recipe "mount::_autofs"
-include_recipe "mount::_glusterfs"
 
 # Setup Static mounts: create mountpoints and configure in fstab
 Array(node['mounts']['static']).each do |s|
@@ -42,46 +40,109 @@ Array(node['mounts']['static']).each do |s|
   end
 end
 
-# Setup Autofs mounts
-Array(node['mounts']['auto']).each do |a|
-  directory a['parent_directory'] do
-    recursive true
-    action :create
-  end
-  if a.has_key?("REMOVE")
-    if File.exists?(a['config_file'])
-      fe = Chef::Util::FileEdit.new(a['config_file'])
-      fe.search_file_delete_line(/#{a['device']}/)
-      fe.write_file
-    end
-  else
-    if File.exists?("/etc/auto.master")
-      fe = Chef::Util::FileEdit.new("/etc/auto.master")
-      fe.insert_line_if_no_match(/^#{a['parent_directory']}\s+/,"#{a['parent_directory']}	#{a['config_file']}	--timeout=60 --ghost\n")
-      fe.search_file_replace(/^\+/, "#+")
-      fe.write_file
+Array(node['mounts']['directories']).each do |d|
+  directory d[:name] do
+    if d.has_key?( :owner)
+      owner l[:owner]
     else
-      file "/etc/auto.master" do
-        owner "root"
-        group "root"
-        mode 0664
-        content "#{a['parent_directory']}  #{a['config_file']}     --timeout=60 --ghost"
-        action :create_if_missing
-      end
+      owner "root"
     end
-    if File.exists?(a['config_file'])
-      fe = Chef::Util::FileEdit.new(a['config_file'])
-      fe.insert_line_if_no_match(/#\s+{a['device']}$/,"#{a['mount_point']}	-fstype=#{a['fstype']},#{a['options']}	#{a['device']}\n")
-      fe.write_file
+    if d.has_key?( :group)
+      group d[:group]
     else
-      file a['config_file'] do
-        owner "root"
-        group "root"
-        mode 0664
-        content "#{a['mount_point']}    -fstype=#{a['fstype']},#{a['options']}    #{a['device']}\n"
-        action :create_if_missing
-      end
+      group node[:root_group]
+    end
+    if d.has_key?( :mode)
+      mode d[:mode]
+    else
+      mode 0755
+    end
+
+    if d.has_key?( :action) 
+      action l[:action]
     end
   end
-end
+end 
+
+Array(node['mounts']['links']).each do |l|
+  link l[:dest] do
+    to l[:src]
+
+    if l.has_key?( :owner)
+      owner l[:owner]
+    else
+      owner "root"
+    end
+    if l.has_key?( :group)
+      group l[:group]
+    else
+      group node[:root_group]
+    end
+    if l.has_key?( :mode)
+      mode l[:mode]
+    else
+      mode 0777
+    end
+
+    if l.has_key?( :action) 
+      action l[:action]
+    end
+    if l.has_key?( :type) 
+      link_type l[:type]
+    end
+  end
+end 
+
+Array(node['mounts']['glob_links']).each do |gl|
+  directory( gl[:dest_directory]) do
+    if gl.has_key?( :owner)
+      owner gl[:owner]
+    else
+      owner "root"
+    end
+    if gl.has_key?( :group)
+      group gl[:group]
+    else
+      group node[:root_group]
+    end
+    if gl.has_key?( :mode)
+      mode gl[:mode]
+    else
+      mode 0755
+    end
+  end
+
+  Dir.glob( gl[:src_pattern]).each do |src_path|
+    src_filename = File::basename( src_path)
+    dest_path = File.join( gl[:dest_directory], src_filename)
+   
+    link dest_path do
+      to src_path
+
+      if gl.has_key?( :owner)
+        owner gl[:owner]
+      else
+        owner "root"
+      end
+      if gl.has_key?( :group)
+        group gl[:group]
+      else
+        group node[:root_group]
+      end
+      if gl.has_key?( :mode)
+        mode gl[:mode]
+      else
+        mode 0777
+      end
+
+      if gl.has_key?( :action) 
+        action gl[:action]
+      end
+      if gl.has_key?( :type) 
+        link_type gl[:type]
+      end
+    end
+  end
+end 
+
 
