@@ -59,7 +59,7 @@ Array(node['mounts']['directories']).each do |d|
     end
 
     if d.has_key?( :action) 
-      action l[:action]
+      action d[:action]
     end
   end
 end 
